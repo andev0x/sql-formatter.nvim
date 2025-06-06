@@ -9,23 +9,24 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
+# File: python/sqlformat.py
+
 import sqlparse
 
-def format_sql(sql, indent, keyword_case):
+
+def format_sql(sql):
     """
-    Format SQL code using sqlparse.
+    Format SQL code with fixed style: 2-space indent, uppercase keywords.
     
     Args:
         sql (str): SQL code to format
-        indent (int): Number of spaces for indentation
-        keyword_case (str): 'upper', 'lower', or None for keyword case
     Returns:
         str: Formatted SQL
     """
     return sqlparse.format(
         sql,
         reindent=True,
-        indent_width=indent,
-        keyword_case=keyword_case,
+        indent_width=2,
+        keyword_case='upper',
         wrap_after=80
     )
