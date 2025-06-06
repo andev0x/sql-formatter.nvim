@@ -1,0 +1,24 @@
+*sqlformat.txt* SQL Formatting Plugin for Neovim
+
+Overview~
+SQLFormat is a Neovim plugin that formats SQL code using the sqlparse Python library.
+
+Installation~
+1. Install the plugin using your favorite plugin manager, e.g.:
+   Using vim-plug:
+   `Plug 'username/nvim-sqlformat'`
+2. Ensure Python3 and sqlparse are installed:
+   `pip install sqlparse`
+
+Usage~
+- Format the entire buffer: `:SQLFormat`
+- Format a range: `:'<,'>SQLFormat`
+- Default keybinding: `<leader>sf` (normal mode)
+
+Configuration~
+- `g:sqlformat_indent`: Set indentation width (default: 2)
+- `g:sqlformat_keyword_case`: Set keyword case ('upper', 'lower', or '' for none; default: 'upper')
+
+Example~
+let g:sqlformat_indent = 4
+let g:sqlformat_keyword_case = 'lower'

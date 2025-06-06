@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', '3.11']
+        neovim-version: ['stable', 'nightly']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install sqlparse
+        pip install vim-vint
+        pip install pynvim
+
+    - name: Install Neovim
+      run: |
+        if [ "${{ matrix.neovim-version }}" = "stable" ]; then
+          sudo add-apt-repository -y ppa:neovim-ppa/stable
+        else
+          sudo add-apt-repository -y ppa:neovim-ppa/unstable
+        fi
+        sudo apt-get update
+        sudo apt-get install -y neovim
+
+    - name: Check VimScript syntax
+      run: |
+        vint plugin/
+        vint autoload/
+
+    - name: Run Python tests
+      run: |
+        python -m unittest discover -s tests
+
+    - name: Check for Python syntax errors
+      run: |
+        python -m py_compile python/*.py
+
+    - name: Check for Python type hints
+      run: |
+        pip install mypy
+        mypy python/*.py
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        pip install black
+
+    - name: Run flake8
+      run: |
+        flake8 python/ --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Run black
+      run: |
+        black --check python/
