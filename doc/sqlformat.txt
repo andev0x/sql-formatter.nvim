@@ -1,24 +1,85 @@
-*sqlformat.txt* SQL Formatting Plugin for Neovim
+*sqlformat.txt*  SQL formatting plugin for Neovim
 
-Overview~
-SQLFormat is a Neovim plugin that formats SQL code using the sqlparse Python library.
+==============================================================================
+INTRODUCTION                                                      *sqlformat-intro*
 
-Installation~
-1. Install the plugin using your favorite plugin manager, e.g.:
-   Using vim-plug:
-   `Plug 'username/nvim-sqlformat'`
-2. Ensure Python3 and sqlparse are installed:
-   `pip install sqlparse`
+nvim-sqlformat is a Neovim plugin that provides SQL code formatting using the
+sqlparse library. It offers customizable formatting options and integrates
+seamlessly with Neovim.
 
-Usage~
-- Format the entire buffer: `:SQLFormat`
-- Format a range: `:'<,'>SQLFormat`
-- Default keybinding: `<leader>sf` (normal mode)
+==============================================================================
+INSTALLATION                                              *sqlformat-installation*
 
-Configuration~
-- `g:sqlformat_indent`: Set indentation width (default: 2)
-- `g:sqlformat_keyword_case`: Set keyword case ('upper', 'lower', or '' for none; default: 'upper')
+Using lazy.nvim:
+```lua
+{
+  'andevgo/nvim-sqlformat',
+  config = function()
+    require('sqlformat').setup({
+      indent = 2,
+      keyword_case = 'upper',
+      line_width = 80,
+      format_on_save = false,
+      custom_keymaps = {
+        format = '<leader>sf'
+      }
+    })
+  end
+}
+```
 
-Example~
-let g:sqlformat_indent = 4
-let g:sqlformat_keyword_case = 'lower'
+==============================================================================
+USAGE                                                              *sqlformat-usage*
+
+Commands:
+    :SQLFormat              Format the entire buffer
+    :'<,'>SQLFormat         Format selected lines in visual mode
+
+Keybindings:
+    <leader>sf              Format the current buffer (default)
+
+==============================================================================
+CONFIGURATION                                            *sqlformat-configuration*
+
+The plugin can be configured through the setup function:
+
+```lua
+require('sqlformat').setup({
+  indent = 2,              -- Number of spaces for indentation
+  keyword_case = 'upper',  -- 'upper' or 'lower' for SQL keywords
+  line_width = 80,         -- Maximum line width
+  format_on_save = false,  -- Enable/disable format on save
+  custom_keymaps = {       -- Custom keybindings
+    format = '<leader>sf'
+  }
+})
+```
+
+==============================================================================
+REQUIREMENTS                                              *sqlformat-requirements*
+
+- Neovim with Python 3 support
+- sqlparse Python package
+
+Install sqlparse:
+    pip install sqlparse
+
+==============================================================================
+TROUBLESHOOTING                                        *sqlformat-troubleshooting*
+
+1. Plugin not working:
+   - Ensure Neovim has Python 3 support
+   - Check if sqlparse is installed
+   - Verify Python path in Neovim
+
+2. Format on save not working:
+   - Check if format_on_save is enabled
+   - Ensure file has .sql extension
+
+==============================================================================
+LICENSE                                                          *sqlformat-license*
+
+This plugin is licensed under the MIT License.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

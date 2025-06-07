@@ -12,21 +12,45 @@
 # File: python/sqlformat.py
 
 import sqlparse
+import vim
 
 
-def format_sql(sql):
+def format_sql(sql, indent, keyword_case, line_width=80):
     """
-    Format SQL code with fixed style: 2-space indent, uppercase keywords.
+    Format SQL code using sqlparse.
     
     Args:
         sql (str): SQL code to format
+        indent (int): Number of spaces for indentation
+        keyword_case (str): 'upper', 'lower', or None for keyword case
+        line_width (int): Maximum line width for wrapping
     Returns:
         str: Formatted SQL
     """
-    return sqlparse.format(
-        sql,
-        reindent=True,
-        indent_width=2,
-        keyword_case='upper',
-        wrap_after=80
-    )
+    try:
+        vim.command('echo "Formatting SQL..."')
+        
+        # Validate inputs
+        if not isinstance(indent, int) or indent < 0:
+            raise ValueError("Indent must be a positive integer")
+        if keyword_case not in ['upper', 'lower', None]:
+            raise ValueError("Keyword case must be 'upper', 'lower', or None")
+        if not isinstance(line_width, int) or line_width < 0:
+            raise ValueError("Line width must be a positive integer")
+
+        # Format the SQL
+        formatted = sqlparse.format(
+            sql,
+            reindent=True,
+            indent_width=indent,
+            keyword_case=keyword_case,
+            wrap_after=line_width
+        )
+        
+        vim.command('echo "SQL formatting complete"')
+        return formatted
+        
+    except Exception as e:
+        error_msg = f"SQL formatting failed: {str(e)}"
+        vim.command(f'echoerr "{error_msg}"')
+        return sql  # Return original SQL on error
