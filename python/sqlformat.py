@@ -33,7 +33,7 @@ def format_sql(sql, indent, keyword_case, line_width=80):
         # Validate inputs
         if not isinstance(indent, int) or indent < 0:
             raise ValueError("Indent must be a positive integer")
-        if keyword_case not in ['upper', 'lower', None]:
+        if keyword_case not in ["upper", "lower", None]:
             raise ValueError("Keyword case must be 'upper', 'lower', or None")
         if not isinstance(line_width, int) or line_width < 0:
             raise ValueError("Line width must be a positive integer")
@@ -44,7 +44,7 @@ def format_sql(sql, indent, keyword_case, line_width=80):
             reindent=True,
             indent_width=indent,
             keyword_case=keyword_case,
-            wrap_after=line_width
+            wrap_after=line_width,
         )
         
         vim.command('echo "SQL formatting complete"')

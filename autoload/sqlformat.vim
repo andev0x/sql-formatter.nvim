@@ -14,6 +14,8 @@ function! sqlformat#Format(startline, endline) abort
   " Get the selected lines
   let l:lines = getline(a:startline, a:endline)
   let l:input = join(l:lines, '\n')
+  let l:formatted = ''
+  let l:error = ''
 
   " Call Python script to format SQL
   python3 << EOF
@@ -38,7 +40,7 @@ except Exception as e:
 EOF
 
   " Check for Python errors
-  if exists('l:error')
+  if !empty(l:error)
     echohl ErrorMsg
     echomsg 'SQLFormat error: ' . l:error
     echohl None
