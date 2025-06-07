@@ -66,7 +66,7 @@ let g:sqlformat_keyword_case = 'lower'
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/andevgo/nvim-sqlformat/blob/main/LICENSE) file for details.
 
 ## Contributing
 
