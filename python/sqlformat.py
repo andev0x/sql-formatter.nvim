@@ -11,7 +11,7 @@
 # copies or substantial portions of the Software.
 # File: python/sqlformat.py
 
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import sqlparse
 import vim
@@ -49,13 +49,13 @@ def format_sql(
             raise ValueError("Line width must be a positive integer")
 
         # Format the SQL
-        formatted = sqlparse.format(
+        formatted = cast(str, sqlparse.format(
             sql,
             reindent=True,
             indent_width=indent,
             keyword_case=keyword_case,
             wrap_after=line_width,
-        )
+        ))
 
         vim.command('echo "SQL formatting complete"')
         return formatted
