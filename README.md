@@ -2,6 +2,12 @@
 
 A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sqlparse` for optimal formatting results with a Lua fallback for basic formatting.
 
+## Images
+<p float="left">
+  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p1.png" width="300" />
+  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p2.png" width="300" />
+</p>
+
 ## Features
 
 - 🚀 **High Performance**: Uses external `sqlparse` formatter for speed
@@ -33,15 +39,14 @@ pip install sqlparse
 
 ```lua
 {
-  "andev0x/sql-formatter.nvim",
-  ft = { "sql", "mysql", "plsql", "pgsql" },
-  config = function()
-    require("sql-formatter").setup({
-      format_on_save = true,
-      dialect = "postgresql",
-    })
-  end,
-}
+"andev0x/sql-formatter.nvim",
+ft = { "sql", "mysql", "plsql", "pgsql" },
+config = function()
+  vim.g.sqlformat_command = "sqlformat"
+  vim.g.sqlformat_options = "-r -k upper"
+  vim.g.sqlformat_prog = "sqlformat"
+end,
+},
 ```
 
 #### packer.nvim
