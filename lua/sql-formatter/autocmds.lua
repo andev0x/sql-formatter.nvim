@@ -4,7 +4,6 @@
 
 local M = {}
 local formatter = require("sql-formatter.formatter")
-local utils = require("sql-formatter.utils")
 
 M.config = {}
 
