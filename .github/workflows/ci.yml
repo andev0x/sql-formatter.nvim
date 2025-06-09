@@ -1,36 +1,102 @@
-name: CI
+name: SQL Formatter CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nvim-version: ["0.8.0", "0.9.0"]
+        sql-dialect: ["postgresql", "mysql", "sqlite"]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Neovim
+        run: |
+          curl -LO https://github.com/neovim/neovim/releases/download/v${{ matrix.nvim-version }}/nvim-linux64.tar.gz
+          tar xzf nvim-linux64.tar.gz
+          sudo mv nvim-linux64/bin/nvim /usr/local/bin/
+          sudo mv nvim-linux64/lib/nvim /usr/local/lib/
+          sudo mv nvim-linux64/share/nvim /usr/local/share/
+          nvim --version
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          node-version: "18"
+          python-version: "3.x"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          # Install sqlparse
+          pip install sqlparse
+          
+          # Install LuaJIT and LuaRocks
+          sudo apt-get update
+          sudo apt-get install -y luajit luarocks
+          sudo luarocks install luacheck
+          
+          # Install stylua for formatting
+          cargo install stylua
 
-      - name: Run tests
-        run: npm test
+      - name: Lint Lua code
+        run: |
+          luacheck lua/ --globals vim --no-color
+          stylua --check lua/
 
-      - name: Build project
-        run: npm run build
+      - name: Test plugin loading
+        run: |
+          nvim --headless -c "lua require('sql-formatter').setup({dialect = '${{ matrix.sql-dialect }}'})" -c "qa!"
 
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Test SQL formatting
+        run: |
+          # Test basic SQL formatting
+          echo "SELECT * FROM users WHERE active=1;" | sqlformat --reindent --keywords upper --identifiers lower -
+          
+          # Test complex SQL formatting
+          echo "WITH RECURSIVE cte AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c INNER JOIN cte ON c.parent_id = cte.id) SELECT * FROM cte;" | sqlformat --reindent --keywords upper --identifiers lower -
+
+      - name: Test file type detection
+        run: |
+          # Create test SQL files
+          echo "SELECT * FROM test;" > test.sql
+          echo "SELECT * FROM test;" > test.mysql
+          echo "SELECT * FROM test;" > test.pgsql
+          
+          # Test formatting for each file type
+          for file in test.*; do
+            nvim --headless -c "e $file" -c "lua require('sql-formatter').setup({dialect = '${{ matrix.sql-dialect }}'})" -c "wq"
+          done
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "## Changes" > CHANGELOG.tmp
+          git log --oneline --since="$(git describe --tags --abbrev=0 2>/dev/null || echo '1970-01-01')" >> CHANGELOG.tmp
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        if: contains(github.event.head_commit.message, '[release]')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body_path: CHANGELOG.tmp
+          draft: false
+          prerelease: false
