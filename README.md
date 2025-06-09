@@ -1,4 +1,4 @@
-# nvim-sql-formatter
+# sql-formatter.nvim
 
 A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sqlparse` for optimal formatting results with a Lua fallback for basic formatting.
 
@@ -11,6 +11,11 @@ A lightweight, high-performance SQL formatter plugin for Neovim that leverages `
 - 🎯 **Multi-dialect**: Support for PostgreSQL, MySQL, SQLite, and more
 - 🔄 **Fallback**: Pure Lua formatter when external tools unavailable
 - 📋 **Range Formatting**: Format selected text only
+
+## Requirements
+
+- Neovim >= 0.8.0
+- Optional: `sqlparse` for optimal performance (`pip install sqlparse`)
 
 ## Installation
 
@@ -28,7 +33,7 @@ pip install sqlparse
 
 ```lua
 {
-  "andev0x/nvim-sql-formatter",
+  "andev0x/sql-formatter.nvim",
   ft = { "sql", "mysql", "plsql", "pgsql" },
   config = function()
     require("sql-formatter").setup({
@@ -43,7 +48,7 @@ pip install sqlparse
 
 ```lua
 use {
-  "andev0x/nvim-sql-formatter",
+  "andev0x/sql-formatter.nvim",
   ft = { "sql", "mysql", "plsql", "pgsql" },
   config = function()
     require("sql-formatter").setup()
@@ -54,7 +59,7 @@ use {
 #### vim-plug
 
 ```vim
-Plug 'andev0x/nvim-sql-formatter'
+Plug 'andev0x/sql-formatter.nvim'
 ```
 
 ## Configuration
@@ -166,11 +171,6 @@ This plugin prioritizes performance by:
 2. **Lua Fallback**: Lightweight Lua formatter when external tools unavailable
 3. **Lazy Loading**: Only loads for SQL file types
 4. **Minimal Dependencies**: Pure Lua implementation with optional external tools
-
-## Requirements
-
-- Neovim >= 0.8.0
-- Optional: `sqlparse` for optimal performance (`pip install sqlparse`)
 
 ## Contributing
 

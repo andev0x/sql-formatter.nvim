@@ -11,15 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nvim-version: ["stable", "nightly"]
+        nvim-version: ["0.8.0", "0.9.0", "nightly"]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup Neovim
-        uses: rhymond/setup-neovim@v1
-        with:
-          version: ${{ matrix.nvim-version }}
+        run: |
+          if [ "${{ matrix.nvim-version }}" = "nightly" ]; then
+            curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+            tar xzf nvim-linux64.tar.gz
+            sudo mv nvim-linux64/bin/nvim /usr/local/bin/
+            sudo mv nvim-linux64/lib/nvim /usr/local/lib/
+            sudo mv nvim-linux64/share/nvim /usr/local/share/
+          else
+            curl -LO https://github.com/neovim/neovim/releases/download/v${{ matrix.nvim-version }}/nvim-linux64.tar.gz
+            tar xzf nvim-linux64.tar.gz
+            sudo mv nvim-linux64/bin/nvim /usr/local/bin/
+            sudo mv nvim-linux64/lib/nvim /usr/local/lib/
+            sudo mv nvim-linux64/share/nvim /usr/local/share/
+          fi
+          nvim --version
 
       - name: Setup Python
         uses: actions/setup-python@v4
