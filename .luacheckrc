@@ -53,8 +53,15 @@ ignore = {
   "631", -- max_line_length
   "611", -- line contains only whitespace
   "612", -- inconsistent indentation
+  "613", -- line has trailing whitespace
 }
 
 exclude_files = {
   "tests/",
 }
+
+max_line_length = 100
+max_string_line_length = 100
+max_comment_line_length = 100
+max_code_line_length = 100
+max_cyclomatic_complexity = 20
