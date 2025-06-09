@@ -46,7 +46,7 @@ jobs:
 
       - name: Lint Lua code
         run: |
-          luacheck lua/ --globals vim
+          luacheck lua/ --globals vim --no-color
           stylua --check lua/
 
       - name: Test plugin loading

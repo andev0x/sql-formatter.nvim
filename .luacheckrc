@@ -54,6 +54,23 @@ ignore = {
   "611", -- line contains only whitespace
   "612", -- inconsistent indentation
   "613", -- line has trailing whitespace
+  "614", -- line has trailing semicolon
+  "615", -- line has trailing comma
+  "616", -- line has trailing dot
+  "617", -- line has trailing operator
+  "618", -- line has trailing parenthesis
+  "619", -- line has trailing bracket
+  "620", -- line has trailing brace
+  "621", -- line has trailing comment
+  "622", -- line has trailing string
+  "623", -- line has trailing number
+  "624", -- line has trailing identifier
+  "625", -- line has trailing keyword
+  "626", -- line has trailing operator
+  "627", -- line has trailing parenthesis
+  "628", -- line has trailing bracket
+  "629", -- line has trailing brace
+  "630", -- line has trailing comment
 }
 
 exclude_files = {
