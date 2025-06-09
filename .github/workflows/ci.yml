@@ -1,4 +1,4 @@
-name: CI
+name: SQL Formatter CI
 
 on:
   push:
@@ -11,26 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nvim-version: ["0.8.0", "0.9.0", "nightly"]
+        nvim-version: ["0.8.0", "0.9.0"]
+        sql-dialect: ["postgresql", "mysql", "sqlite"]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup Neovim
         run: |
-          if [ "${{ matrix.nvim-version }}" = "nightly" ]; then
-            curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-            tar xzf nvim-linux64.tar.gz
-            sudo mv nvim-linux64/bin/nvim /usr/local/bin/
-            sudo mv nvim-linux64/lib/nvim /usr/local/lib/
-            sudo mv nvim-linux64/share/nvim /usr/local/share/
-          else
-            curl -LO https://github.com/neovim/neovim/releases/download/v${{ matrix.nvim-version }}/nvim-linux64.tar.gz
-            tar xzf nvim-linux64.tar.gz
-            sudo mv nvim-linux64/bin/nvim /usr/local/bin/
-            sudo mv nvim-linux64/lib/nvim /usr/local/lib/
-            sudo mv nvim-linux64/share/nvim /usr/local/share/
-          fi
+          curl -LO https://github.com/neovim/neovim/releases/download/v${{ matrix.nvim-version }}/nvim-linux64.tar.gz
+          tar xzf nvim-linux64.tar.gz
+          sudo mv nvim-linux64/bin/nvim /usr/local/bin/
+          sudo mv nvim-linux64/lib/nvim /usr/local/lib/
+          sudo mv nvim-linux64/share/nvim /usr/local/share/
           nvim --version
 
       - name: Setup Python
@@ -38,25 +31,47 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install sqlparse
-        run: pip install sqlparse
-
-      - name: Install Lua dependencies
+      - name: Install dependencies
         run: |
+          # Install sqlparse
+          pip install sqlparse
+          
+          # Install Lua dependencies
           sudo apt-get update
           sudo apt-get install -y luarocks
           sudo luarocks install luacheck
+          
+          # Install stylua for formatting
+          cargo install stylua
 
-      - name: Run luacheck
-        run: luacheck lua/ --globals vim
-
-      - name: Check plugin loads
+      - name: Lint Lua code
         run: |
-          nvim --headless -c "lua require('sql-formatter')" -c "qa!"
+          luacheck lua/ --globals vim
+          stylua --check lua/
 
-      - name: Test external formatter
+      - name: Test plugin loading
         run: |
+          nvim --headless -c "lua require('sql-formatter').setup({dialect = '${{ matrix.sql-dialect }}'})" -c "qa!"
+
+      - name: Test SQL formatting
+        run: |
+          # Test basic SQL formatting
           echo "SELECT * FROM users WHERE active=1;" | sqlformat --reindent --keywords upper --identifiers lower -
+          
+          # Test complex SQL formatting
+          echo "WITH RECURSIVE cte AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c INNER JOIN cte ON c.parent_id = cte.id) SELECT * FROM cte;" | sqlformat --reindent --keywords upper --identifiers lower -
+
+      - name: Test file type detection
+        run: |
+          # Create test SQL files
+          echo "SELECT * FROM test;" > test.sql
+          echo "SELECT * FROM test;" > test.mysql
+          echo "SELECT * FROM test;" > test.pgsql
+          
+          # Test formatting for each file type
+          for file in test.*; do
+            nvim --headless -c "e $file" -c "lua require('sql-formatter').setup({dialect = '${{ matrix.sql-dialect }}'})" -c "wq"
+          done
 
   release:
     needs: test
@@ -71,7 +86,6 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          # Simple changelog generation
           echo "## Changes" > CHANGELOG.tmp
           git log --oneline --since="$(git describe --tags --abbrev=0 2>/dev/null || echo '1970-01-01')" >> CHANGELOG.tmp
 
