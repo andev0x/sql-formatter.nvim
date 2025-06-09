@@ -4,6 +4,7 @@
 
 local M = {}
 local formatter = require("sql-formatter.formatter")
+local utils = require("sql-formatter.utils")
 
 M.config = {}
 
@@ -14,7 +15,7 @@ end
 
 function M.create_autocmds()
   local group = vim.api.nvim_create_augroup("SQLFormatter", { clear = true })
-  
+
   -- Format on save
   vim.api.nvim_create_autocmd("BufWritePre", {
     group = group,
@@ -24,9 +25,9 @@ function M.create_autocmds()
         formatter.format_buffer()
       end
     end,
-    desc = "Format SQL on save"
+    desc = "Format SQL on save",
   })
-  
+
   -- Set up buffer-local settings for SQL files
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
@@ -34,7 +35,7 @@ function M.create_autocmds()
     callback = function(args)
       vim.api.nvim_buf_set_option(args.buf, "commentstring", "-- %s")
     end,
-    desc = "Set up SQL buffer settings"
+    desc = "Set up SQL buffer settings",
   })
 end
 
