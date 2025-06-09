@@ -8,15 +8,15 @@ local M = {}
 function M.is_sql_buffer(buf)
   buf = buf or vim.api.nvim_get_current_buf()
   local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
-  
+
   local sql_filetypes = { "sql", "mysql", "plsql", "pgsql" }
-  
+
   for _, ft in ipairs(sql_filetypes) do
     if filetype == ft then
       return true
     end
   end
-  
+
   return false
 end
 
@@ -30,7 +30,7 @@ end
 function M.get_visual_selection()
   local start_line = vim.fn.line("'<")
   local end_line = vim.fn.line("'>")
-  
+
   return start_line, end_line
 end
 
@@ -43,3 +43,4 @@ function M.command_exists(cmd)
 end
 
 return M
+
