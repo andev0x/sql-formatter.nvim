@@ -51,6 +51,7 @@ globals = {
 
 ignore = {
   "631", -- max_line_length
+  "611", -- line contains only whitespace
 }
 
 exclude_files = {
