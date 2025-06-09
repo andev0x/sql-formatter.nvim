@@ -82,34 +82,34 @@ require("sql-formatter").setup({
   -- Core settings
   format_on_save = true,
   dialect = "postgresql",
-  
+
   -- Indentation
   indent = "  ",
   tab_width = 2,
   use_tabs = false,
-  
+
   -- Case formatting
   uppercase = true,
   identifier_case = "lower",
   function_case = "upper",
   datatype_case = "upper",
-  
+
   -- Layout
   lines_between_queries = 2,
   max_column_length = 80,
   comma_start = false,
   operator_padding = true,
-  
+
   -- File types
   filetypes = { "sql", "mysql", "plsql", "pgsql" },
-  
+
   -- Key bindings
   keybindings = {
     format_buffer = "<leader>sf",
     format_selection = "<leader>ss",
     toggle_format_on_save = "<leader>st",
   },
-  
+
   -- External formatter (sqlparse)
   external_formatter = {
     enabled = true,
@@ -122,7 +122,7 @@ require("sql-formatter").setup({
       "-"
     }
   },
-  
+
   -- Notifications
   notify = {
     enabled = true,
@@ -181,7 +181,7 @@ This plugin prioritizes performance by:
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
