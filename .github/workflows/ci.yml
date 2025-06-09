@@ -42,10 +42,16 @@ jobs:
           sudo luarocks install luacheck
           
           # Install stylua for formatting
+          curl -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
           cargo install stylua
 
-      - name: Lint Lua code
+      - name: Format and Lint Lua code
         run: |
+          # Format code first
+          stylua lua/
+          
+          # Then run checks
           luacheck lua/ --globals vim --no-color
           stylua --check lua/
 
