@@ -36,9 +36,9 @@ jobs:
           # Install sqlparse
           pip install sqlparse
           
-          # Install Lua dependencies
+          # Install LuaJIT and LuaRocks
           sudo apt-get update
-          sudo apt-get install -y lua5.1 luarocks
+          sudo apt-get install -y luajit luarocks
           sudo luarocks install luacheck
           
           # Install stylua for formatting
