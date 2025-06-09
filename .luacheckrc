@@ -52,6 +52,7 @@ globals = {
 ignore = {
   "631", -- max_line_length
   "611", -- line contains only whitespace
+  "612", -- inconsistent indentation
 }
 
 exclude_files = {
