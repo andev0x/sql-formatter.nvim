@@ -1,5 +1,0 @@
-sqlparse>=0.4.4
-pynvim>=0.4.3
-black>=23.0.0
-mypy>=1.0.0
-types-setuptools>=57.4.0 

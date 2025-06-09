@@ -1,73 +1,193 @@
-# nvim-sqlformat
+# nvim-sql-formatter
 
-A Neovim plugin for formatting SQL code using [sqlparse](https://github.com/andialbrecht/sqlparse).
+A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sqlparse` for optimal formatting results with a Lua fallback for basic formatting.
 
 ## Features
 
-- Format SQL code with customizable indentation
-- Support for keyword case customization (upper/lower)
-- Simple command and keybinding interface
-- Uses the powerful sqlparse library for consistent SQL formatting
-
-## Requirements
-
-- Neovim
-- Python 3.x
-- sqlparse Python package
+- 🚀 **High Performance**: Uses external `sqlparse` formatter for speed
+- 🔧 **Configurable**: Extensive customization options
+- 📝 **Format on Save**: Automatic formatting when saving files
+- ⌨️ **Key Bindings**: Convenient shortcuts for formatting
+- 🎯 **Multi-dialect**: Support for PostgreSQL, MySQL, SQLite, and more
+- 🔄 **Fallback**: Pure Lua formatter when external tools unavailable
+- 📋 **Range Formatting**: Format selected text only
 
 ## Installation
 
-1. Install the plugin with your preferred plugin manager:
+### Prerequisites
 
-   ```vim
-   " vim-plug
-   Plug 'andevgo/nvim-sqlformat'
+For optimal performance, install `sqlparse`:
 
-   " packer.nvim
-   use 'andevgo/nvim-sqlformat'
+```bash
+pip install sqlparse
+```
 
-   " lazy.nvim
-   {
-     'andevgo/nvim-sqlformat',
-     config = function()
-       -- Optional: Configure plugin settings here
-     end
-   }
-   ```
+### Plugin Installation
 
-2. Install the required Python package:
-   ```bash
-   pip install sqlparse
-   ```
+#### lazy.nvim
+
+```lua
+{
+  "andev0x/nvim-sql-formatter",
+  ft = { "sql", "mysql", "plsql", "pgsql" },
+  config = function()
+    require("sql-formatter").setup({
+      format_on_save = true,
+      dialect = "postgresql",
+    })
+  end,
+}
+```
+
+#### packer.nvim
+
+```lua
+use {
+  "andev0x/nvim-sql-formatter",
+  ft = { "sql", "mysql", "plsql", "pgsql" },
+  config = function()
+    require("sql-formatter").setup()
+  end,
+}
+```
+
+#### vim-plug
+
+```vim
+Plug 'andev0x/nvim-sql-formatter'
+```
+
+## Configuration
+
+### Minimal Setup
+
+```lua
+require("sql-formatter").setup()
+```
+
+### Full Configuration
+
+```lua
+require("sql-formatter").setup({
+  -- Core settings
+  format_on_save = true,
+  dialect = "postgresql",
+  
+  -- Indentation
+  indent = "  ",
+  tab_width = 2,
+  use_tabs = false,
+  
+  -- Case formatting
+  uppercase = true,
+  identifier_case = "lower",
+  function_case = "upper",
+  datatype_case = "upper",
+  
+  -- Layout
+  lines_between_queries = 2,
+  max_column_length = 80,
+  comma_start = false,
+  operator_padding = true,
+  
+  -- File types
+  filetypes = { "sql", "mysql", "plsql", "pgsql" },
+  
+  -- Key bindings
+  keybindings = {
+    format_buffer = "<leader>sf",
+    format_selection = "<leader>ss",
+    toggle_format_on_save = "<leader>st",
+  },
+  
+  -- External formatter (sqlparse)
+  external_formatter = {
+    enabled = true,
+    command = "sqlformat",
+    args = {
+      "--reindent",
+      "--keywords", "upper",
+      "--identifiers", "lower",
+      "--strip-comments",
+      "-"
+    }
+  },
+  
+  -- Notifications
+  notify = {
+    enabled = true,
+    level = "info",
+    timeout = 2000,
+  },
+})
+```
 
 ## Usage
 
 ### Commands
 
-- `:SQLFormat` - Format the entire buffer
-- `:'<,'>SQLFormat` - Format selected lines in visual mode
+- `:SQLFormat` - Format entire buffer
+- `:SQLFormatRange` - Format selected lines (visual mode)
+- `:SQLFormatToggle` - Toggle format-on-save for current buffer
+- `:SQLFormatInfo` - Show formatter information
 
-### Keybindings
+### Key Bindings (default)
 
-By default, the plugin provides the following keybinding:
-- `<leader>sf` - Format the current buffer
+- `<leader>sf` - Format buffer
+- `<leader>ss` - Format selection (visual mode)
+- `<leader>st` - Toggle format-on-save
 
-## Configuration
+### Example
 
-You can customize the plugin behavior by setting these variables in your Neovim configuration:
-
-```vim
-" Set indentation size (default: 2)
-let g:sqlformat_indent = 4
-
-" Set keyword case (options: 'upper' or 'lower', default: 'upper')
-let g:sqlformat_keyword_case = 'lower'
+**Before:**
+```sql
+select u.id,u.name,p.title from users u left join posts p on u.id=p.user_id where u.active=1 and p.published=true order by u.created_at desc;
 ```
 
-## License
+**After:**
+```sql
+SELECT
+    u.id,
+    u.name,
+    p.title
+FROM users u
+LEFT JOIN posts p
+    ON u.id = p.user_id
+WHERE u.active = 1
+    AND p.published = TRUE
+ORDER BY u.created_at DESC;
+```
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/andevgo/nvim-sqlformat/blob/main/LICENSE) file for details.
+## Performance
+
+This plugin prioritizes performance by:
+
+1. **External Formatter**: Uses `sqlparse` (Python) for heavy lifting
+2. **Lua Fallback**: Lightweight Lua formatter when external tools unavailable
+3. **Lazy Loading**: Only loads for SQL file types
+4. **Minimal Dependencies**: Pure Lua implementation with optional external tools
+
+## Requirements
+
+- Neovim >= 0.8.0
+- Optional: `sqlparse` for optimal performance (`pip install sqlparse`)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Author
+
+**anvndev** ([@andev0x](https://github.com/andev0x))
+
+## Support
+
+If you find this plugin useful, consider [sponsoring the development](https://github.com/sponsors/andev0x).
