@@ -12,7 +12,7 @@ function M.setup(config)
   M.config = config
 end
 
--- Check if external formatter (sqlparse) is available
+-- Check if external formatter (sqlparse or sql-formatter) is available
 function M.check_external_formatter()
   if not M.config.external_formatter.enabled then
     return false
@@ -23,8 +23,14 @@ function M.check_external_formatter()
   handle:close()
   M.external_available = result ~= ""
   if not M.external_available then
+    local install_msg = ""
+    if cmd == "sql-formatter" then
+      install_msg = "Install with: npm install -g sql-formatter"
+    elseif cmd == "sqlparse" then
+      install_msg = "Install with: pip install sqlparse"
+    end
     vim.notify(
-      "External SQL formatter '" .. cmd .. "' not found. Install with: pip install sqlparse",
+      "External SQL formatter '" .. cmd .. "' not found. " .. install_msg,
       vim.log.levels.WARN,
       { title = "SQL Formatter" }
     )
@@ -32,14 +38,21 @@ function M.check_external_formatter()
   return M.external_available
 end
 
--- Format SQL using external formatter (sqlparse)
+-- Format SQL using external formatter (sqlparse or sql-formatter)
 function M.format_with_external(text)
   if not M.external_available then
     return nil, "External formatter not available"
   end
   local cmd = M.config.external_formatter.command
   local args = table.concat(M.config.external_formatter.args, " ")
-  local full_cmd = string.format("echo %s | %s %s", vim.fn.shellescape(text), cmd, args)
+  local full_cmd
+  if cmd == "sql-formatter" then
+    -- sql-formatter expects input from stdin
+    full_cmd = string.format("echo %s | %s %s", vim.fn.shellescape(text), cmd, args)
+  else
+    -- default: sqlparse or other
+    full_cmd = string.format("echo %s | %s %s", vim.fn.shellescape(text), cmd, args)
+  end
   local handle = io.popen(full_cmd)
   if not handle then
     return nil, "Failed to execute formatter command"
@@ -52,31 +65,47 @@ function M.format_with_external(text)
   return result:gsub("%s+$", ""), nil -- Remove trailing whitespace
 end
 
--- Fallback Lua-based formatter (basic)
+-- Improved Lua-based formatter (smarter, more beautiful)
 function M.format_with_lua(text)
   local lines = vim.split(text, "\n")
   local formatted_lines = {}
   local indent_level = 0
-  local indent = M.config.indent
-  for _, line in ipairs(lines) do
+  local indent = M.config.indent or "  "
+  local clause_keywords = {
+    "SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "HAVING", "LIMIT", "OFFSET", "JOIN", "LEFT JOIN", "RIGHT JOIN", "INNER JOIN", "OUTER JOIN", "ON", "UNION", "VALUES", "SET", "INSERT", "UPDATE", "DELETE"
+  }
+  local function is_clause(line)
+    for _, kw in ipairs(clause_keywords) do
+      if line:upper():match("^" .. kw) then
+        return true
+      end
+    end
+    return false
+  end
+  local function add_linebreaks(sql)
+    -- Add line breaks before major clauses
+    for _, kw in ipairs(clause_keywords) do
+      sql = sql:gsub("%s+" .. kw, "\n" .. kw)
+    end
+    return sql
+  end
+  -- Preprocess: add line breaks for major clauses
+  local preprocessed = add_linebreaks(text)
+  local split_lines = vim.split(preprocessed, "\n")
+  for i, line in ipairs(split_lines) do
     local trimmed = line:match("^%s*(.-)%s*$")
     if trimmed ~= "" and not utils.is_comment_line(trimmed) then
-      -- Handle keywords that decrease indent
-      if trimmed:upper():match("^(END|ELSE|ELSIF|WHEN)%s") then
-        indent_level = math.max(0, indent_level - 1)
+      -- Indent columns in SELECT
+      if i > 1 and split_lines[i-1]:upper():match("^SELECT") and not is_clause(trimmed) then
+        indent_level = 1
+      elseif is_clause(trimmed) then
+        indent_level = 0
       end
-      -- Apply current indentation
       local formatted_line = string.rep(indent, indent_level) .. trimmed
-      -- Format keywords to uppercase if configured
       if M.config.uppercase then
         formatted_line = M.format_keywords(formatted_line)
       end
       table.insert(formatted_lines, formatted_line)
-      -- Handle keywords that increase indent
-      if trimmed:upper():match("^(SELECT|FROM|WHERE|JOIN|INNER|LEFT|RIGHT|FULL|CASE|BEGIN|IF|LOOP|WHILE)%s") or
-         trimmed:upper():match("(THEN|ELSE|DO)%s*$") then
-        indent_level = indent_level + 1
-      end
     else
       table.insert(formatted_lines, trimmed)
     end

@@ -1,6 +1,6 @@
 # sql-formatter.nvim
 
-A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sqlparse` for optimal formatting results with a Lua fallback for basic formatting.
+A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sql-formatter` (Node.js) or `sqlparse` (Python) for optimal formatting results, with a Lua fallback for basic formatting.
 
 ## Images
 <p float="left">
@@ -10,24 +10,32 @@ A lightweight, high-performance SQL formatter plugin for Neovim that leverages `
 
 ## Features
 
-- 🚀 **High Performance**: Uses external `sqlparse` formatter for speed
+- 🚀 **High Performance**: Uses external `sql-formatter` (Node.js) or `sqlparse` (Python) for speed
 - 🔧 **Configurable**: Extensive customization options
 - 📝 **Format on Save**: Automatic formatting when saving files
 - ⌨️ **Key Bindings**: Convenient shortcuts for formatting
 - 🎯 **Multi-dialect**: Support for PostgreSQL, MySQL, SQLite, and more
-- 🔄 **Fallback**: Pure Lua formatter when external tools unavailable
+- 🔄 **Fallback**: Improved Lua formatter when external tools unavailable
 - 📋 **Range Formatting**: Format selected text only
 
 ## Requirements
 
 - Neovim >= 0.8.0
-- Optional: `sqlparse` for optimal performance (`pip install sqlparse`)
+- Optional: `sql-formatter` (Node.js) **or** `sqlparse` (Python) for optimal performance
 
 ## Installation
 
 ### Prerequisites
 
-For optimal performance, install `sqlparse`:
+For optimal performance, install either `sql-formatter` (recommended) or `sqlparse`:
+
+#### Option 1: sql-formatter (Node.js, recommended)
+
+```bash
+npm install -g sql-formatter
+```
+
+#### Option 2: sqlparse (Python)
 
 ```bash
 pip install sqlparse
@@ -110,17 +118,15 @@ require("sql-formatter").setup({
     toggle_format_on_save = "<leader>st",
   },
 
-  -- External formatter (sqlparse)
+  -- External formatter (choose one)
   external_formatter = {
     enabled = true,
-    command = "sqlformat",
-    args = {
-      "--reindent",
-      "--keywords", "upper",
-      "--identifiers", "lower",
-      "--strip-comments",
-      "-"
-    }
+    -- Use sql-formatter (Node.js):
+    command = "sql-formatter",
+    args = {},
+    -- Or use sqlparse (Python):
+    -- command = "sqlformat",
+    -- args = { "--reindent", "--keywords", "upper", "--identifiers", "lower", "--strip-comments", "-" }
   },
 
   -- Notifications
@@ -172,8 +178,8 @@ ORDER BY u.created_at DESC;
 
 This plugin prioritizes performance by:
 
-1. **External Formatter**: Uses `sqlparse` (Python) for heavy lifting
-2. **Lua Fallback**: Lightweight Lua formatter when external tools unavailable
+1. **External Formatter**: Uses `sql-formatter` (Node.js, recommended) or `sqlparse` (Python) for heavy lifting
+2. **Lua Fallback**: Improved Lua formatter when external tools unavailable
 3. **Lazy Loading**: Only loads for SQL file types
 4. **Minimal Dependencies**: Pure Lua implementation with optional external tools
 

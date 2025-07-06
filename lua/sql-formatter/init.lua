@@ -30,17 +30,17 @@ local default_config = {
     level = "info",
     timeout = 2000,
   },
-  -- External formatter command (using sqlparse)
+  -- External formatter command (using sql-formatter or sqlparse)
+  -- To use sql-formatter (Node.js):
+  --   command = "sql-formatter",
+  --   args = { "--config", "/path/to/.sql-formatter.json" } -- optional
+  -- To use sqlparse (Python):
+  --   command = "sqlformat",
+  --   args = { "--reindent", "--keywords", "upper", "--identifiers", "lower", "--strip-comments", "-" }
   external_formatter = {
     enabled = true,
-    command = "sqlformat",
-    args = {
-      "--reindent",
-      "--keywords", "upper",
-      "--identifiers", "lower",
-      "--strip-comments",
-      "-"
-    }
+    command = "sql-formatter", -- or "sqlformat"
+    args = {}, -- see above for examples
   }
 }
 
