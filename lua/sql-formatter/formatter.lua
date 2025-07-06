@@ -67,7 +67,6 @@ end
 
 -- Improved Lua-based formatter (smarter, more beautiful)
 function M.format_with_lua(text)
-  local lines = vim.split(text, "\n")
   local formatted_lines = {}
   local indent_level = 0
   local indent = M.config.indent or "  "
