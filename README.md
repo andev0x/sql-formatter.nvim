@@ -1,12 +1,23 @@
+<div align = "center">
+<img src="https://devblogs.microsoft.com/azure-sql/wp-content/uploads/sites/56/2025/05/sql25Icon.png" width = 230/>
+
 # sql-formatter.nvim
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [![Neovim](https://img.shields.io/badge/Neovim-%3E=0.9.0-blueviolet?logo=neovim)](https://neovim.io/) [![Neovim](https://img.shields.io/badge/my%20blog-andev0x-blue)](https://andev0x.github.io/)
+
+
+</div>
+
 
 A lightweight, high-performance SQL formatter plugin for Neovim that leverages `sql-formatter` (Node.js) or `sqlparse` (Python) for optimal formatting results, with a Lua fallback for basic formatting.
 
+
+
 ## Images
-<p float="left">
-  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p1.png" width="300" />
-  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p2.png" width="300" />
-</p>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p1.png" width="400" />
+  <img src="https://raw.githubusercontent.com/andev0x/description-image-archive/refs/heads/main/sql-formatter/p2.png" width="400" />
+
+</div>
 
 ## Features
 
@@ -202,3 +213,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Support
 
 If you find this plugin useful, consider [sponsoring the development](https://github.com/sponsors/andev0x).
+
